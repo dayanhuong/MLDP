@@ -86,15 +86,13 @@ TOWN_LIST = list(TOWN_TO_REGION.keys())
 
 st.set_page_config(page_title='HDB Resale Price Predictor', layout='centered')
 
-def bgImg(image_path, blur_px=6):
-    with open(image_path, "rb") as image_file:
-        encoded_string = base64.b64encode(image_file.read()).decode()
+def bgImg(image_url, blur_px=6):
 
     st.markdown(
         f"""
         <style>
         body {{
-            background-image: url("data:image/png;base64,{encoded_string}");
+            background-image: url("{image_url}");
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
@@ -113,7 +111,7 @@ def bgImg(image_path, blur_px=6):
     )
 
 #to call before ui appears
-bgImg("hdbbg.jpg")
+bgImg("https://www.hdb.gov.sg/-/media/HDBContent/Images/SCEG/dw2101_a3_13_PatLaw.jpg")
 
 st.title("HDB Resale Price Predictor")
 st.markdown("Estimate your flat's resale price using a machine learning model trained on historical data.")
