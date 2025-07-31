@@ -5,12 +5,12 @@ import joblib
 import base64
 
 #load the trained model
-model = joblib.load('model.pkl')
+model = joblib.load('model.joblib')
 
 #list of features
 FEATURE_COLS = [
     'floor_area_sqm', 'lease_commence_date',
-    # flat_model dummies
+    #flat_model
     'flat_model_2-room', 'flat_model_3Gen', 'flat_model_Adjoined flat',
     'flat_model_Apartment', 'flat_model_DBSS', 'flat_model_Improved',
     'flat_model_Improved-Maisonette', 'flat_model_Maisonette',
@@ -20,11 +20,11 @@ FEATURE_COLS = [
     'flat_model_Premium Maisonette', 'flat_model_Simplified',
     'flat_model_Standard', 'flat_model_Terrace', 'flat_model_Type S1',
     'flat_model_Type S2',
-    # flat_type dummies
+    #flat_type
     'flat_type_1 ROOM', 'flat_type_2 ROOM', 'flat_type_3 ROOM',
     'flat_type_4 ROOM', 'flat_type_5 ROOM', 'flat_type_EXECUTIVE',
     'flat_type_MULTI-GENERATION',
-    # town dummies
+    #town
     'town_ANG MO KIO', 'town_BEDOK', 'town_BISHAN', 'town_BUKIT BATOK', 'town_BUKIT MERAH',
     'town_BUKIT PANJANG', 'town_BUKIT TIMAH', 'town_CENTRAL AREA', 'town_CHOA CHU KANG',
     'town_CLEMENTI', 'town_GEYLANG', 'town_HOUGANG', 'town_JURONG EAST', 'town_JURONG WEST',
@@ -33,7 +33,7 @@ FEATURE_COLS = [
     'town_TOA PAYOH', 'town_WOODLANDS', 'town_YISHUN',
     #other numeric/features
     'storey_avg', 'year', 'month_num', 'flat_age', 'area_times_age',
-    #region dummies
+    #region
     'region_Central', 'region_East', 'region_North', 'region_North-East', 'region_West'
 ]
 
@@ -114,7 +114,7 @@ def bgImg(image_url, blur_px=6):
 bgImg("https://www.hdb.gov.sg/-/media/HDBContent/Images/SCEG/dw2101_a3_13_PatLaw.jpg")
 
 st.title("HDB Resale Price Predictor")
-st.markdown("Estimate your flat's resale price using a machine learning model trained on historical data.")
+st.markdown("Estimate your flat's resale price")
 
 with st.form("prediction_form"):
     st.header("Enter Flat Details")
@@ -142,10 +142,10 @@ def preprocess_input(
     floor_area_sqm, lease_commence_date, storey_avg, year, month_num, flat_age, area_times_age,
     selected_flat_model, selected_flat_type, selected_town
 ):
-    # Initialize all features to 0
+    
     input_dict = {feat: 0 for feat in FEATURE_COLS}
     
-    # Numeric features
+    #numeric features
     input_dict['floor_area_sqm'] = floor_area_sqm
     input_dict['lease_commence_date'] = lease_commence_date
     input_dict['storey_avg'] = storey_avg
@@ -154,35 +154,35 @@ def preprocess_input(
     input_dict['flat_age'] = flat_age
     input_dict['area_times_age'] = area_times_age
     
-    # Set flat model one-hot
+    #flat model ohe
     flat_model_col = f'flat_model_{selected_flat_model}'
     if flat_model_col in input_dict:
         input_dict[flat_model_col] = 1
     else:
         st.warning(f"Warning: Unknown flat model selected: {selected_flat_model}")
     
-    # Set flat type one-hot
+    #flat type ohe
     flat_type_col = f'flat_type_{selected_flat_type}'
     if flat_type_col in input_dict:
         input_dict[flat_type_col] = 1
     else:
         st.warning(f"Warning: Unknown flat type selected: {selected_flat_type}")
        
-    # Set town one-hot
+    #town ohe
     town_col = f'town_{selected_town}'
     if town_col in input_dict:
         input_dict[town_col] = 1
     else:
         st.warning(f"Warning: Unknown town selected: {selected_town}")
     
-    # Infer region from town
+    #get region from town
     region_col = TOWN_TO_REGION.get(selected_town)
     if region_col and region_col in input_dict:
         input_dict[region_col] = 1
     else:
         st.warning(f"Warning: No valid region mapping for town {selected_town}")
     
-    # Convert to dataframe
+    #convert to dataframe
     df_input = pd.DataFrame([input_dict])
     return df_input
 
